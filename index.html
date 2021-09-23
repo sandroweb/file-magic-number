@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      File Magic Number
+    </title>
+  </head>
+  <body>
+    <button id="files-button" type="button">Buscar arquivos</button>
+    <div id="magic-numbers"></div>
+    <script>
+      const getFilesButton = () => {
+        return document.getElementById('files-button')
+      }
+
+      const getList = () => {
+        return document.getElementById('magic-numbers')
+      }
+
+      const addMagicNumber = (file, magicNumber) => {
+        getList().innerHTML = getList().innerHTML + `<div style="border: 1px solid #000">
+          <p>Name: ${file.name}</p>
+          <p>MagicNumber: ${magicNumber}</p>
+        </div>`
+      }
+
+      const loadMagicNumber = (file) => {
+        return new Promise((resolve, reject) => {
+          const filereader = new FileReader();
+          filereader.onloadend = evt => {
+            const result = evt.target.result;
+            const uint = result && typeof result !== 'string' ? new Uint8Array(result) : undefined;
+            let bytes = [];
+            if (!uint) return reject(false);
+            uint.forEach(byte => {
+              bytes.push(byte.toString(16));
+            });
+            const hex = bytes.join('').toUpperCase();
+            addMagicNumber(file, hex);
+            return resolve(hex);
+          }
+          const blob = file.slice(0, 4);
+          filereader.readAsArrayBuffer(blob);
+        })
+      }
+
+      const onSelectedFiles = (e) => {
+        const files = e.target.files ? Array.from(e.target.files) : null;
+        files.forEach(loadMagicNumber);
+      }
+
+      getFilesButton().onclick = (e) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.onchange = onSelectedFiles;
+        input.click();
+      }
+    </script>
+  </body>
+</html>
