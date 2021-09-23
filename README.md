@@ -1,2 +1,3 @@
 # file-magic-number
-Created to search magic number of files
+
+[https://sandroweb.github.io/file-magic-number/index.html](https://sandroweb.github.io/file-magic-number/index.html)
